@@ -1,6 +1,6 @@
 {
   "name": "diary-mcp",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "An MCP server that provides AI agents with a private diary for recording thoughts, feelings, and reflections",
   "type": "module",
   "bin": {
