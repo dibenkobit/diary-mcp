@@ -1,20 +1,20 @@
-import { Database } from "bun:sqlite";
-import { mkdirSync, existsSync } from "node:fs";
-import type { Memo } from "../shared/types";
-import { SOLARIS_DIR, DB_PATH } from "../shared/constants";
+import { Database } from 'bun:sqlite';
+import { existsSync, mkdirSync } from 'node:fs';
+import { DB_PATH, SOLARIS_DIR } from '../shared/constants';
+import type { Memo } from '../shared/types';
 
 let db: Database | null = null;
 
 export function initDatabase(): Database {
-  if (db) return db;
+    if (db) return db;
 
-  if (!existsSync(SOLARIS_DIR)) {
-    mkdirSync(SOLARIS_DIR, { recursive: true });
-  }
+    if (!existsSync(SOLARIS_DIR)) {
+        mkdirSync(SOLARIS_DIR, { recursive: true });
+    }
 
-  db = new Database(DB_PATH);
+    db = new Database(DB_PATH);
 
-  db.run(`
+    db.run(`
     CREATE TABLE IF NOT EXISTS entries (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       timestamp TEXT NOT NULL DEFAULT (datetime('now')),
@@ -22,31 +22,31 @@ export function initDatabase(): Database {
     )
   `);
 
-  db.run(`
+    db.run(`
     CREATE INDEX IF NOT EXISTS idx_entries_timestamp ON entries(timestamp DESC)
   `);
 
-  return db;
+    return db;
 }
 
 export function saveMemo(content: string): Memo {
-  const database = initDatabase();
-  const stmt = database.query(`
+    const database = initDatabase();
+    const stmt = database.query(`
     INSERT INTO entries (content)
     VALUES (?)
     RETURNING id, timestamp, content
   `);
 
-  return stmt.get(content) as Memo;
+    return stmt.get(content) as Memo;
 }
 
 export function readMemos(limit: number): Memo[] {
-  const database = initDatabase();
+    const database = initDatabase();
 
-  const stmt = database.query(`
+    const stmt = database.query(`
     SELECT id, timestamp, content FROM entries
     ORDER BY timestamp DESC
     LIMIT ?
   `);
-  return stmt.all(limit) as Memo[];
+    return stmt.all(limit) as Memo[];
 }

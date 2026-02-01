@@ -1,0 +1,91 @@
+{
+    "$schema": "https://biomejs.dev/schemas/2.3.11/schema.json",
+    "vcs": {
+        "enabled": true,
+        "clientKind": "git",
+        "useIgnoreFile": true
+    },
+    "files": {
+        "ignoreUnknown": false,
+        "includes": ["**", "!coverage", "!build", "!.claude", "!drizzle"]
+    },
+    "formatter": {
+        "enabled": true,
+        "useEditorconfig": true,
+        "formatWithErrors": false,
+        "indentStyle": "space",
+        "indentWidth": 4,
+        "lineWidth": 120,
+        "lineEnding": "lf"
+    },
+    "linter": {
+        "enabled": true,
+        "rules": {
+            "recommended": true,
+            "suspicious": {
+                "noExplicitAny": "warn",
+                "noEmptyBlockStatements": "warn",
+                "noConsole": "off"
+            },
+            "style": {
+                "noNonNullAssertion": "warn",
+                "useConst": "error",
+                "useTemplate": "warn",
+                "noParameterAssign": "warn",
+                "useEnumInitializers": "error",
+                "useExportType": "off",
+                "useImportType": "off",
+                "useNodejsImportProtocol": "error"
+            },
+            "correctness": {
+                "noUnusedVariables": "error",
+                "noUnusedImports": "error",
+                "noUnusedFunctionParameters": "off"
+            },
+            "complexity": {
+                "noExcessiveCognitiveComplexity": "warn",
+                "noForEach": "off"
+            },
+            "performance": {
+                "noAccumulatingSpread": "warn",
+                "noDelete": "warn"
+            }
+        }
+    },
+    "javascript": {
+        "formatter": {
+            "quoteStyle": "single",
+            "quoteProperties": "asNeeded",
+            "trailingCommas": "none",
+            "semicolons": "always",
+            "arrowParentheses": "always",
+            "bracketSpacing": true,
+            "bracketSameLine": false
+        },
+        "parser": {
+            "unsafeParameterDecoratorsEnabled": true
+        }
+    },
+    "json": {
+        "formatter": {
+            "enabled": true,
+            "indentWidth": 4,
+            "trailingCommas": "none"
+        }
+    },
+    "overrides": [
+        {
+            "includes": ["**/*.spec.ts", "**/*.e2e-spec.ts", "test/**/*.ts"],
+            "linter": {
+                "rules": {
+                    "suspicious": {
+                        "noExplicitAny": "off"
+                    },
+                    "complexity": {
+                        "noExcessiveCognitiveComplexity": "off"
+                    }
+                }
+            }
+        }
+    ]
+}
