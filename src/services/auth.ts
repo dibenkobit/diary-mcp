@@ -1,27 +1,8 @@
-import { mkdirSync, existsSync } from "fs";
+import { mkdir, unlink } from "node:fs/promises";
 import { AUTH_URL, TOKEN_URL, SOLARIS_DIR, TOKEN_PATH } from "../shared/constants";
-
-interface DeviceCodeResponse {
-  device_code: string;
-  user_code: string;
-  verification_uri: string;
-  expires_in: number;
-  interval: number;
-}
-
-interface TokenResponse {
-  access_token: string;
-  token_type: string;
-  expires_in?: number;
-}
-
-interface StoredToken {
-  access_token: string;
-  created_at: number;
-}
+import type { DeviceCodeResponse, TokenResponse, StoredToken } from "../shared/types";
 
 export async function login(): Promise<void> {
-  // 1. Request device code from server
   const deviceResponse = await fetch(AUTH_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -34,12 +15,10 @@ export async function login(): Promise<void> {
   const deviceData = (await deviceResponse.json()) as DeviceCodeResponse;
   const { device_code, user_code, verification_uri, interval } = deviceData;
 
-  // 2. Show user the code and open browser
   console.log("\nTo authenticate, visit:");
   console.log(`  ${verification_uri}`);
   console.log(`\nEnter code: ${user_code}\n`);
 
-  // Try to open browser (cross-platform)
   try {
     const openCommand =
       process.platform === "darwin"
@@ -54,15 +33,10 @@ export async function login(): Promise<void> {
 
   console.log("Waiting for authentication...");
 
-  // 3. Poll for token
   const token = await pollForToken(device_code, interval);
 
-  // 4. Ensure directory exists
-  if (!existsSync(SOLARIS_DIR)) {
-    mkdirSync(SOLARIS_DIR, { recursive: true });
-  }
+  await mkdir(SOLARIS_DIR, { recursive: true });
 
-  // 5. Save token
   const storedToken: StoredToken = {
     access_token: token,
     created_at: Date.now(),
@@ -72,14 +46,11 @@ export async function login(): Promise<void> {
   console.log("\nAuthenticated successfully!");
 }
 
-async function pollForToken(
-  deviceCode: string,
-  interval: number
-): Promise<string> {
-  const pollInterval = (interval || 5) * 1000; // Default 5 seconds
+async function pollForToken(deviceCode: string, interval: number): Promise<string> {
+  const pollInterval = (interval || 5) * 1000;
 
   while (true) {
-    await sleep(pollInterval);
+    await Bun.sleep(pollInterval);
 
     const response = await fetch(TOKEN_URL, {
       method: "POST",
@@ -97,25 +68,20 @@ async function pollForToken(
 
     const error = (await response.json()) as { error: string };
 
-    if (error.error === "authorization_pending") {
-      // Keep polling
-      continue;
-    } else if (error.error === "slow_down") {
-      // Increase interval
-      await sleep(5000);
-      continue;
-    } else if (error.error === "expired_token") {
-      throw new Error("Device code expired. Please try again.");
-    } else if (error.error === "access_denied") {
-      throw new Error("Access denied by user.");
-    } else {
-      throw new Error(`Authentication failed: ${error.error}`);
+    switch (error.error) {
+      case "authorization_pending":
+        continue;
+      case "slow_down":
+        await Bun.sleep(5000);
+        continue;
+      case "expired_token":
+        throw new Error("Device code expired. Please try again.");
+      case "access_denied":
+        throw new Error("Access denied by user.");
+      default:
+        throw new Error(`Authentication failed: ${error.error}`);
     }
   }
-}
-
-function sleep(ms: number): Promise<void> {
-  return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
 export async function getToken(): Promise<string | null> {
@@ -133,8 +99,7 @@ export async function getToken(): Promise<string | null> {
 
 export async function logout(): Promise<void> {
   try {
-    const { unlinkSync } = await import("fs");
-    unlinkSync(TOKEN_PATH);
+    await unlink(TOKEN_PATH);
     console.log("Logged out successfully.");
   } catch {
     console.log("No active session.");

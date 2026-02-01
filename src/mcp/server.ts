@@ -23,7 +23,7 @@ export async function startServer(cloudMode: boolean) {
       const memo = saveMemo(parsed.content);
 
       if (cloudMode) {
-        syncToCloud(memo).catch(() => {});
+        syncToCloud(memo);
       }
 
       return {

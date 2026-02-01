@@ -1,5 +1,5 @@
 import { Database } from "bun:sqlite";
-import { mkdirSync, existsSync } from "fs";
+import { mkdirSync, existsSync } from "node:fs";
 import type { Memo } from "../shared/types";
 import { SOLARIS_DIR, DB_PATH } from "../shared/constants";
 
