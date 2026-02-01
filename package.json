@@ -1,7 +1,7 @@
 {
-  "name": "solaris",
+  "name": "@dibenkobit/solaris",
   "version": "1.0.1",
-  "description": "An MCP server that provides AI agents with a private diary for recording thoughts, feelings, and reflections",
+  "description": "An MCP server that provides AI agents with private memo storage",
   "type": "module",
   "bin": {
     "solaris": "./src/index.ts"
@@ -13,7 +13,7 @@
     "mcp",
     "model-context-protocol",
     "ai",
-    "diary",
+    "memo",
     "claude",
     "bun"
   ],
@@ -21,7 +21,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/dibenko/solaris"
+    "url": "https://github.com/dibenkobit/solaris"
   },
   "engines": {
     "bun": ">=1.0.0"
