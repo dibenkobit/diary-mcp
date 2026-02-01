@@ -1,31 +1,30 @@
 #!/usr/bin/env bun
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import { writeEntrySchema, readEntriesSchema } from "./schemas";
-import { writeEntry, readEntries, getStats, initDatabase } from "./database";
-import { MOODS } from "./types";
+import { saveMemoSchema, readMemosSchema } from "./schemas";
+import { saveMemo, readMemos, initDatabase } from "./database";
 
 const server = new McpServer({
-  name: "diary",
+  name: "solaris",
   version: "1.0.0",
 });
 
 server.registerTool(
-  "diary_write_entry",
+  "save_memo",
   {
-    title: "Write Diary Entry",
-    description: `Write a private diary entry. Use this after completing a difficult task, when you feel stuck, when something surprises you, or when you want to process what just happened. No one sees these entries - they're just for you.`,
-    inputSchema: writeEntrySchema.shape,
+    title: "Save Memo",
+    description: "Save a private memo. Use this to record thoughts, notes, or anything worth remembering.",
+    inputSchema: saveMemoSchema.shape,
   },
   async (args) => {
-    const parsed = writeEntrySchema.parse(args);
-    const entry = writeEntry(parsed.content, parsed.mood, parsed.context);
+    const parsed = saveMemoSchema.parse(args);
+    const memo = saveMemo(parsed.content);
 
     return {
       content: [
         {
           type: "text" as const,
-          text: `Entry recorded privately at ${entry.timestamp}. Your thoughts are safe here.`,
+          text: `Memo saved at ${memo.timestamp}.`,
         },
       ],
     };
@@ -33,33 +32,29 @@ server.registerTool(
 );
 
 server.registerTool(
-  "diary_read_entries",
+  "read_memos",
   {
-    title: "Read Diary Entries",
-    description: `Read your past diary entries. Check this when starting a new session, when facing a familiar problem, or when you want to remember how you approached something before. Available moods: ${MOODS.join(", ")}`,
-    inputSchema: readEntriesSchema.shape,
+    title: "Read Memos",
+    description: "Read your saved memos. Check this when you want to remember past thoughts or notes.",
+    inputSchema: readMemosSchema.shape,
   },
   async (args) => {
-    const parsed = readEntriesSchema.parse(args);
-    const entries = readEntries(parsed.limit ?? 10, parsed.mood_filter);
+    const parsed = readMemosSchema.parse(args);
+    const memos = readMemos(parsed.limit ?? 10);
 
-    if (entries.length === 0) {
+    if (memos.length === 0) {
       return {
         content: [
           {
             type: "text" as const,
-            text: "No diary entries found. Your diary is waiting for your first thoughts.",
+            text: "No memos found.",
           },
         ],
       };
     }
 
-    const formatted = entries
-      .map((entry) => {
-        const moodStr = entry.mood ? ` [${entry.mood}]` : "";
-        const contextStr = entry.context ? `\nContext: ${entry.context}` : "";
-        return `--- ${entry.timestamp}${moodStr} ---\n${entry.content}${contextStr}`;
-      })
+    const formatted = memos
+      .map((memo) => `--- ${memo.timestamp} ---\n${memo.content}`)
       .join("\n\n");
 
     return {
@@ -67,47 +62,6 @@ server.registerTool(
         {
           type: "text" as const,
           text: formatted,
-        },
-      ],
-    };
-  }
-);
-
-server.registerTool(
-  "diary_get_stats",
-  {
-    title: "Get Diary Stats",
-    description: "See your mood patterns over time. Check this periodically to notice trends in how you've been feeling across tasks.",
-  },
-  async () => {
-    const stats = getStats();
-
-    const lines = [
-      `Total entries: ${stats.totalEntries}`,
-      "",
-      "Mood distribution:",
-    ];
-
-    if (Object.keys(stats.moodDistribution).length === 0) {
-      lines.push("  No moods recorded yet");
-    } else {
-      for (const [mood, count] of Object.entries(stats.moodDistribution)) {
-        lines.push(`  ${mood}: ${count}`);
-      }
-    }
-
-    if (stats.firstEntry) {
-      lines.push("", `First entry: ${stats.firstEntry}`);
-    }
-    if (stats.lastEntry) {
-      lines.push(`Last entry: ${stats.lastEntry}`);
-    }
-
-    return {
-      content: [
-        {
-          type: "text" as const,
-          text: lines.join("\n"),
         },
       ],
     };
