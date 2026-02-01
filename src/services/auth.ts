@@ -1,6 +1,6 @@
 import { mkdir, unlink } from 'node:fs/promises';
-import { AUTH_URL, SOLARIS_DIR, TOKEN_PATH, TOKEN_URL } from '../shared/constants';
-import type { DeviceCodeResponse, StoredToken, TokenResponse } from '../shared/types';
+import { AUTH_URL, SOLARIS_DIR, TOKEN_PATH, TOKEN_URL } from '@/shared/constants';
+import type { DeviceCodeResponse, StoredToken, TokenResponse } from '@/shared/types';
 
 export async function login(): Promise<void> {
     const deviceResponse = await fetch(AUTH_URL, {

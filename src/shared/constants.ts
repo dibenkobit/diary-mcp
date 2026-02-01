@@ -1,5 +1,5 @@
-import { homedir } from 'os';
-import { join } from 'path';
+import { homedir } from 'node:os';
+import { join } from 'node:path';
 import packageJson from '../../package.json';
 
 export const APP_NAME = 'solaris';

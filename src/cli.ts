@@ -1,7 +1,7 @@
 import { Command } from 'commander';
-import { startServer } from './mcp/server';
-import { login, logout } from './services/auth';
-import { APP_DESCRIPTION, APP_NAME, APP_VERSION } from './shared/constants';
+import { startServer } from '@/mcp/server';
+import { login, logout } from '@/services/auth';
+import { APP_DESCRIPTION, APP_NAME, APP_VERSION } from '@/shared/constants';
 
 const program = new Command();
 

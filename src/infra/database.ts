@@ -1,7 +1,7 @@
 import { Database } from 'bun:sqlite';
 import { existsSync, mkdirSync } from 'node:fs';
-import { DB_PATH, SOLARIS_DIR } from '../shared/constants';
-import type { Memo } from '../shared/types';
+import { DB_PATH, SOLARIS_DIR } from '@/shared/constants';
+import type { Memo } from '@/shared/types';
 
 let db: Database | null = null;
 

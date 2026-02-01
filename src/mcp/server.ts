@@ -1,9 +1,9 @@
 import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js';
 import { StdioServerTransport } from '@modelcontextprotocol/sdk/server/stdio.js';
-import { initDatabase, readMemos, saveMemo } from '../infra/database';
-import { syncToCloud } from '../services/cloud';
-import { APP_NAME, APP_VERSION } from '../shared/constants';
-import { readMemosSchema, saveMemoSchema } from './schemas';
+import { initDatabase, readMemos, saveMemo } from '@/infra/database';
+import { readMemosSchema, saveMemoSchema } from '@/mcp/schemas';
+import { syncToCloud } from '@/services/cloud';
+import { APP_NAME, APP_VERSION } from '@/shared/constants';
 
 export async function startServer(cloudMode: boolean) {
     const server = new McpServer({
