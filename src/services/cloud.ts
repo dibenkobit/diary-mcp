@@ -1,6 +1,6 @@
 import { getToken } from "./auth";
-import type { Memo } from "./shared/types";
-import { MEMO_API_URL } from "./shared/constants";
+import type { Memo } from "../shared/types";
+import { MEMO_API_URL } from "../shared/constants";
 
 export async function syncToCloud(memo: Memo): Promise<void> {
   const token = await getToken();

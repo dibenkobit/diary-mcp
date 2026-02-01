@@ -1,9 +1,11 @@
 import { homedir } from "os";
 import { join } from "path";
+import packageJson from "../../package.json";
 
 // App metadata
 export const APP_NAME = "solaris";
-export const APP_VERSION = "1.0.0";
+export const APP_VERSION = packageJson.version;
+export const APP_DESCRIPTION = "MCP server that serves as a private memo storage for AI agents"
 
 // Paths
 export const SOLARIS_DIR = join(homedir(), ".solaris");

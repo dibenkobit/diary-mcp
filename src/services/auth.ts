@@ -1,5 +1,5 @@
 import { mkdirSync, existsSync } from "fs";
-import { AUTH_URL, TOKEN_URL, SOLARIS_DIR, TOKEN_PATH } from "./shared/constants";
+import { AUTH_URL, TOKEN_URL, SOLARIS_DIR, TOKEN_PATH } from "../shared/constants";
 
 interface DeviceCodeResponse {
   device_code: string;

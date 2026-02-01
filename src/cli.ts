@@ -1,14 +1,14 @@
 import { Command } from "commander";
-import { login, logout } from "./auth";
+import { login, logout } from "./services/auth";
 import { startServer } from "./mcp/server";
-import { APP_NAME, APP_VERSION } from "./shared/constants";
+import { APP_NAME, APP_VERSION, APP_DESCRIPTION } from "./shared/constants";
 
 const program = new Command();
 
 program
   .name(APP_NAME)
   .version(APP_VERSION)
-  .description("Private memo MCP server with cloud sync");
+  .description(APP_DESCRIPTION);
 
 const auth = program.command("auth").description("Manage authentication");
 
